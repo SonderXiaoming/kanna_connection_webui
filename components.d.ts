@@ -11,6 +11,9 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     AvatarInfo: typeof import('./src/components/AvatarInfo.vue')['default']
     BossPanel: typeof import('./src/components/BossPanel.vue')['default']
+    ElForm: typeof import('element-plus/es')['ElForm']
+    ElFormItem: typeof import('element-plus/es')['ElFormItem']
+    ElInput: typeof import('element-plus/es')['ElInput']
     FootInfo: typeof import('./src/components/FootInfo.vue')['default']
     HeaderMenu: typeof import('./src/components/HeaderMenu.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

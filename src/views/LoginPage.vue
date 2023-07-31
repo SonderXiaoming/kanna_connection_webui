@@ -12,6 +12,11 @@ const router = useRouter()
 const temp_account = route.query.account
 const temp_password = route.query.password
 
+const form = ref({
+  username: '',
+  password: ''
+})
+
 var username = ref('')
 var password = ref('')
 
@@ -59,18 +64,32 @@ function try_login(_username: string = username.value, _password: string = passw
 <template>
   <div class="login">
     <div class="box">
-      <div class="left"></div>
+      <div class="left">
+        <div class="image"></div>
+      </div>
       <div class="right">
-        <h4>欢 迎 回 来，主 人</h4>
+        <div class="title">欢 迎 回 来，主 人</div>
         <div class="login-form">
-          <input class="acc" type="text" placeholder="QQ号" v-model="username" />
-          <input class="acc" type="password" placeholder="密码（不是QQ密码）" v-model="password" />
+          <input class="acc" type="text" placeholder="QQ号" v-model="form.username" />
+          <input class="acc" type="password" placeholder="密码（不是QQ密码）" v-model="form.password" />
           <button class="submit" @click.prevent="try_login()">登录</button>
+            <!-- </el-form-item> -->
+          <!-- <el-form :model="form" label-width="120px">
+            <el-form-item label="QQ号">
+              <el-input class="acc" type="text" placeholder="QQ号" v-model="form.username" />
+            </el-form-item>
+            <el-form-item label="密码">
+              <el-input class="acc" type="password" placeholder="密码（不是QQ密码）" v-model="form.password" />
+            </el-form-item>
+            <el-form-item>
+              <button class="submit" @click.prevent="try_login()">登录</button>
+            </el-form-item>
+          </el-form> -->
         </div>
       </div>
     </div>
     <div class="video-container">
-      <div class="image" ></div>
+      <div class="image"></div>
     </div>
   </div>
 </template>
@@ -80,36 +99,31 @@ function try_login(_username: string = username.value, _password: string = passw
   display: flex;
   flex-direction: column;
   align-items: center;
-  // position: relative;
+  width: 100vw;
+  height: 100vh;
 
 
   .box {
-    margin: auto;
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    bottom: 0px;
-
+    min-width: 900px;
+    min-height: 500px;
     z-index: 99;
     display: flex;
     overflow: hidden;
     width: 50vw;
     height: 50vh;
+    margin: 25vh auto; 
     background-color: rgba(255, 255, 255, 60%);
     border-radius: 1.5rem;
 
     box-shadow: 0 0 1rem 0.2rem rgb(0 0 0 / 10%);
 
     .left {
-      position: relative;
       width: 35%;
       height: 100%;
-      background-color: skyblue;
+      object-fit: cover;
+      min-width: 300px;
+      .image {
 
-      &::before {
-        content: '';
-        position: absolute;
         width: 100%;
         height: 100%;
         background-image: url('../assets/img/login2.jpg');
@@ -121,26 +135,31 @@ function try_login(_username: string = username.value, _password: string = passw
     .right {
       display: flex;
       width: 65%;
+      height: 100%;
       flex-direction: column;
       align-items: center;
+      min-width: 400px;
 
-      h4 {
+      .title {
         color: rgb(144, 129, 241);
         font-size: 3rem;
-        margin-top: 5rem;
+        margin-top: 4vh;
       }
 
       .login-form {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
+        align-items: center;
+        align-content: center;
+
+
 
         .acc {
           outline: none;
           width: 80%;
           height: 5rem;
           font-size: 1.6rem;
-          margin-top: 5rem;
           padding: 1rem 0 0 1.6rem;
           border: none;
           border-bottom: 1px solid #9081f1;
@@ -153,9 +172,8 @@ function try_login(_username: string = username.value, _password: string = passw
           color: #9081f1;
           padding: 1rem 0 0 1.6rem;
         }
-      }
 
-      .submit {
+        .submit {
         width: 60%;
         height: 5rem;
         color: #f6f6f6;
@@ -170,6 +188,9 @@ function try_login(_username: string = username.value, _password: string = passw
       .submit:hover {
         box-shadow: 0 0 2rem -0.5rem rgb(0 0 0 / 15%);
       }
+      }
+
+      
     }
   }
 
@@ -199,5 +220,11 @@ function try_login(_username: string = username.value, _password: string = passw
 
 
   }
+}
+</style>
+
+<style>
+.acc input {
+  margin:0px 0px 0px;
 }
 </style>
