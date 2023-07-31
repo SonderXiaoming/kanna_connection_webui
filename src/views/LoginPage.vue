@@ -57,7 +57,7 @@ function try_login(_username: string = username.value, _password: string = passw
 </script>
 
 <template>
-  <main>
+  <div class="login">
     <div class="box">
       <div class="left"></div>
       <div class="right">
@@ -69,116 +69,135 @@ function try_login(_username: string = username.value, _password: string = passw
         </div>
       </div>
     </div>
-  </main>
-  <div class="video-container">
-    <video class="video" src="../assets/video/peko2.mp4" muted loop autoplay></video>
+    <div class="video-container">
+      <div class="image" ></div>
+    </div>
   </div>
 </template>
 
-<style lang="scss" scopen>
-html {
-  font-size: 10px;
-  &::before {
-    content: '';
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    z-index: -1;
-  }
-}
-
-.video-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background-color: black;
-  z-index: -99;
-  .video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: blur(15px); //背景模糊设置 */
-    -webkit-filter: grayscale(100%);
-    filter: grayscale(20%); //背景灰度设置*/
-  }
-}
-
-.box {
+<style lang="scss" scoped>
+.login {
   display: flex;
-  overflow: hidden;
-  width: 90rem;
-  height: 55rem;
-  background-color: rgba(255, 255, 255, 60%);
-  border-radius: 1.5rem;
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translate(-50%, 25%);
-  box-shadow: 0 0 1rem 0.2rem rgb(0 0 0 / 10%);
-  .left {
-    position: relative;
-    width: 35%;
-    height: 100%;
-    background-color: skyblue;
-    &::before {
-      content: '';
-      position: absolute;
+  flex-direction: column;
+  align-items: center;
+  // position: relative;
+
+
+  .box {
+    margin: auto;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+
+    z-index: 99;
+    display: flex;
+    overflow: hidden;
+    width: 50vw;
+    height: 50vh;
+    background-color: rgba(255, 255, 255, 60%);
+    border-radius: 1.5rem;
+
+    box-shadow: 0 0 1rem 0.2rem rgb(0 0 0 / 10%);
+
+    .left {
+      position: relative;
+      width: 35%;
+      height: 100%;
+      background-color: skyblue;
+
+      &::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-image: url('../assets/img/login2.jpg');
+        background-size: cover;
+        opacity: 0.8;
+      }
+    }
+
+    .right {
+      display: flex;
+      width: 65%;
+      flex-direction: column;
+      align-items: center;
+
+      h4 {
+        color: rgb(144, 129, 241);
+        font-size: 3rem;
+        margin-top: 5rem;
+      }
+
+      .login-form {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        .acc {
+          outline: none;
+          width: 80%;
+          height: 5rem;
+          font-size: 1.6rem;
+          margin-top: 5rem;
+          padding: 1rem 0 0 1.6rem;
+          border: none;
+          border-bottom: 1px solid #9081f1;
+          color: #9081f1;
+          background-color: transparent;
+        }
+
+        .acc:focus {
+          outline: none;
+          color: #9081f1;
+          padding: 1rem 0 0 1.6rem;
+        }
+      }
+
+      .submit {
+        width: 60%;
+        height: 5rem;
+        color: #f6f6f6;
+        background-image: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+        font-size: 1.4rem;
+        border: none;
+        border-radius: 0.5rem;
+        margin: 6rem 0 0 50%;
+        transform: translateX(-50%);
+      }
+
+      .submit:hover {
+        box-shadow: 0 0 2rem -0.5rem rgb(0 0 0 / 15%);
+      }
+    }
+  }
+
+  .video-container {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+
+    .image {
       width: 100%;
       height: 100%;
-      background-image: url('../assets/img/login2.jpg');
+      object-fit: cover;
+      filter: blur(15px); //背景模糊设置 */
+      // -webkit-filter: grayscale(100%);
+      filter: grayscale(20%); //背景灰度设置*/
+      background-image: url('../assets/img/grasp_video1.gif');
+      background-position: center 0;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
       background-size: cover;
-      opacity: 0.8;
+      -webkit-background-size: cover;
+      /* 兼容Webkit内核浏览器如Chrome和Safari */
+      -o-background-size: cover;
+      /* 兼容Opera */
+
     }
-  }
-  .right {
-    display: flex;
-    width: 65%;
-    flex-direction: column;
-    align-items: center;
-    h4 {
-      color: rgb(144, 129, 241);
-      font-size: 3rem;
-      margin-top: 5rem;
-    }
-    .login-form {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      .acc {
-        outline: none;
-        width: 80%;
-        height: 5rem;
-        font-size: 1.6rem;
-        margin-top: 5rem;
-        padding: 1rem 0 0 1.6rem;
-        border: none;
-        border-bottom: 1px solid #9081f1;
-        color: #9081f1;
-        background-color: transparent;
-      }
-      .acc:focus {
-        outline: none;
-        color: #9081f1;
-        padding: 1rem 0 0 1.6rem;
-      }
-    }
-    .submit {
-      width: 60%;
-      height: 5rem;
-      color: #f6f6f6;
-      background-image: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
-      font-size: 1.4rem;
-      border: none;
-      border-radius: 0.5rem;
-      margin: 6rem 0 0 50%;
-      transform: translateX(-50%);
-    }
-    .submit:hover {
-      box-shadow: 0 0 2rem -0.5rem rgb(0 0 0 / 15%);
-    }
+
+
   }
 }
 </style>

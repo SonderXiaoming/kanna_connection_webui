@@ -152,7 +152,7 @@ const filterHandler = (value: string, row: any, column: TableColumnCtx<string>) 
   </el-container>
 </template>
 
-<style lang="scss" scopen>
+<style lang="scss" scoped>
 .notice-main {
   padding: 0;
 }

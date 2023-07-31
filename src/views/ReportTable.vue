@@ -212,7 +212,7 @@ const filter_boss = (value: string, row: any) => {
   </el-container>
 </template>
 
-<style lang="scss" scopen>
+<style lang="scss" scoped>
 .notice-main {
   padding: 0;
 }

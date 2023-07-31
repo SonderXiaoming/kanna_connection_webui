@@ -7,32 +7,32 @@ const router = createRouter({
     {
       path: '/',
       name: 'base',
-      component: () => import('../views/LoginPage.vue')
+      component: () => import('@/views/LoginPage.vue')
     },
     {
       path: '/home',
       name: 'HomePage',
-      component: () => import('../views/HomePage.vue')
+      component: () => import('@/views/HomePage.vue')
     },
     {
       path: '/login',
       name: 'LoginPage',
-      component: () => import('../views/LoginPage.vue')
+      component: () => import('@/views/LoginPage.vue')
     },
     {
       path: '/:group_id/dashboard',
       name: 'DashBoard',
-      component: () => import('../views/DashBoard.vue')
+      component: () => import('@/views/DashBoard.vue')
     },
     {
       path: '/:group_id/noticetable',
       name: 'NoticeTable',
-      component: () => import('../views/NoticeTable.vue')
+      component: () => import('@/views/NoticeTable.vue')
     },
     {
       path: '/:group_id/reporttable',
       name: 'ReportTable',
-      component: () => import('../views/ReportTable.vue')
+      component: () => import('@/views/ReportTable.vue')
     }
   ]
 })

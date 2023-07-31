@@ -69,7 +69,7 @@ function clan_dashboard(group_id: string) {
   <foot-info></foot-info>>
 </template>
 
-<style lang="scss" scopen>
+<style lang="scss" scoped>
 header {
   position: relative;
   .background {

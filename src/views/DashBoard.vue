@@ -201,7 +201,7 @@ function boss_img(id: number) {
   </el-container>
 </template>
 
-<style lang="scss" scopen>
+<style lang="scss" scoped>
 .dash-broad-main {
   padding: 0;
   .clanbattle-info {
