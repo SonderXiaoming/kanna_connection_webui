@@ -61,8 +61,13 @@ jobs:
           prerelease: false
       
       - name: Create Tar Ball
-        if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/')
         run: tar cJf kanna_connection_webui.tar.xz dist
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: kanna_connection_webui_${{ github.sha }}
+          path: dist/
       
       - name: Upload Release Asset
         if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/')
