@@ -9,7 +9,7 @@
   </div>
 </template>
 
-<style lang="scss" scopen>
+<style lang="scss" scoped>
 .foot {
   display: flex;
   position: fixed;

@@ -7,15 +7,24 @@
       <el-divider />
       <el-main class="shell-main">
         <el-menu class="menu-vertical">
-          <el-menu-item index="1" @click="change_route(`/${group_id}/dashboard`)">
+          <el-menu-item
+            index="1"
+            @click="change_route(`/${group_id}/dashboard`)"
+          >
             <el-icon><location /></el-icon>
             <span>会战面板</span>
           </el-menu-item>
-          <el-menu-item index="2" @click="change_route(`/${group_id}/noticetable`)">
+          <el-menu-item
+            index="2"
+            @click="change_route(`/${group_id}/noticetable`)"
+          >
             <el-icon><icon-menu /></el-icon>
             <span>通知表格</span>
           </el-menu-item>
-          <el-menu-item index="3" @click="change_route(`/${group_id}/reporttable`)">
+          <el-menu-item
+            index="3"
+            @click="change_route(`/${group_id}/reporttable`)"
+          >
             <el-icon><document /></el-icon>
             <span>出刀记录</span>
           </el-menu-item>
@@ -28,21 +37,21 @@
 
 <script lang="ts">
 export default {
-  props: ['qq_id', 'group_id']
-}
+  props: ["qq_id", "group_id"],
+};
 </script>
 
 <script lang="ts" setup>
-import AvatarInfo from '../components/AvatarInfo.vue'
-import { Document, Menu as IconMenu, Location } from '@element-plus/icons-vue'
-import { useRouter } from 'vue-router'
-const router = useRouter()
+import AvatarInfo from "../components/AvatarInfo.vue";
+import { Document, Menu as IconMenu, Location } from "@element-plus/icons-vue";
+import { useRouter } from "vue-router";
+const router = useRouter();
 function change_route(path: string) {
-  router.push(path)
+  router.push(path);
 }
 </script>
 
-<style lang="scss" scopen>
+<style lang="scss" scoped>
 .shell {
   display: flex;
   width: 250px;

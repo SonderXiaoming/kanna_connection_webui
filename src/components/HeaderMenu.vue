@@ -1,14 +1,14 @@
 <script lang="ts">
 export default {
-  props: ['priority']
-}
+  props: ["priority"],
+};
 </script>
 
 <script lang="ts" setup>
-import { useRouter } from 'vue-router'
-const router = useRouter()
+import { useRouter } from "vue-router";
+const router = useRouter();
 function change_route(path: string) {
-  router.push(path)
+  router.push(path);
 }
 </script>
 
@@ -23,7 +23,7 @@ function change_route(path: string) {
   </el-menu>
 </template>
 
-<style lang="scss" scopen>
+<style lang="scss">
 body {
   background-color: rgb(245, 245, 247);
 }
