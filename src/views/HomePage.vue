@@ -1,41 +1,45 @@
 <script setup lang="ts">
-import FootInfo from '../components/FootInfo.vue'
-import AvatarInfo from '../components/AvatarInfo.vue'
-import HeaderMenu from '../components/HeaderMenu.vue'
-import axios from 'axios'
-import Cookies from 'js-cookie'
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-const router = useRouter()
-const home_api = `${import.meta.env.VITE_API_URL}/home`
+import FootInfo from "../components/FootInfo.vue";
+import AvatarInfo from "../components/AvatarInfo.vue";
+import HeaderMenu from "../components/HeaderMenu.vue";
+import axios from "axios";
+import Cookies from "js-cookie";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+const router = useRouter();
+const home_api = `${import.meta.env.VITE_API_URL}/home`;
 var data = ref<HomeInfo>({
-  user_id: '1791800364',
-  name: '桥本环奈',
-  status: '神',
+  user_id: "1791800364",
+  name: "桥本环奈",
+  status: "神",
   priority: 0,
-  saying: '',
-  clan: []
-})
+  saying:
+    "我们不必为他人隐藏本性而感到愤怒，因为你自己也在隐藏本性。——拉罗什富科《箴言集》",
+  clan: [],
+});
 interface HomeInfo {
-  user_id: string
-  name: string
-  status: string
-  priority: number
-  saying: string
-  clan: Clan[]
+  user_id: string;
+  name: string;
+  status: string;
+  priority: number;
+  saying: string;
+  clan: Clan[];
 }
 interface Clan {
-  name: string
-  group_id: string
+  name: string;
+  group_id: string;
 }
 axios
-  .post(home_api, JSON.parse(Cookies.get(import.meta.env.VITE_Cookie_Name) || ''))
+  .post(
+    home_api,
+    JSON.parse(Cookies.get(import.meta.env.VITE_Cookie_Name) || "")
+  )
   .then((response) => {
-    data.value = response.data.data
-  })
+    data.value = response.data.data;
+  });
 
 function clan_dashboard(group_id: string) {
-  router.push(`/${group_id}/dashboard`)
+  router.push(`/${group_id}/dashboard`);
 }
 </script>
 
@@ -53,7 +57,7 @@ function clan_dashboard(group_id: string) {
     <HeaderMenu :priority="data.priority"></HeaderMenu>
   </header>
   <main>
-    <h3 id="saying">{{ data.saying }}</h3>
+    <span id="saying">{{ data.saying }}</span>
     <el-card class="card" shadow="always">
       <div v-for="clan in data.clan" :key="clan.group_id">
         <el-button
@@ -66,7 +70,7 @@ function clan_dashboard(group_id: string) {
       </div>
     </el-card>
   </main>
-  <foot-info></foot-info>>
+  <foot-info></foot-info>
 </template>
 
 <style lang="scss" scoped>
@@ -83,7 +87,7 @@ header {
     }
     #wave {
       position: absolute;
-      background-image: url('../assets/img/wave.png');
+      background-image: url("../assets/img/wave.png");
       background-repeat: repeat-x;
       width: 100%;
       height: 66pt;
@@ -96,15 +100,16 @@ header {
     text-align: center;
     position: absolute;
     left: calc(3.7vw + 250pt);
-    top: 240pt;
+    top: 222pt;
     max-width: 40vw;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+    z-index: 3;
   }
   #status {
     display: flex;
-    background: url('../assets/img/textCount.png');
+    background: url("../assets/img/textCount.png");
     background-size: 100% 100%;
     justify-content: center;
     align-items: center;
@@ -125,10 +130,10 @@ header {
 
 main {
   position: relative;
-  top: 15pt;
   #saying {
     display: flex;
     justify-content: center;
+    margin: 1.5rem;
   }
   .card {
     width: 80vw;
