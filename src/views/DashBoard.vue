@@ -1,81 +1,84 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import FootInfo from '@/components/FootInfo.vue'
-import SideMenu from '@/components/SideMenu.vue'
-import BossPanel from '@/components/BossPanel.vue'
-import { useRoute } from 'vue-router'
-import axios from 'axios'
+import { ref } from "vue";
+import FootInfo from "@/components/FootInfo.vue";
+import SideMenu from "@/components/SideMenu.vue";
+import BossPanel from "@/components/BossPanel.vue";
+import { useRoute } from "vue-router";
+import axios from "axios";
 
-import Cookies from 'js-cookie'
+import Cookies from "js-cookie";
 var data = ref<DashboardInfo>({
-  user_id: '1791800364',
-  name: '桥本环奈',
+  user_id: "1791800364",
+  name: "桥本环奈",
   priority: 0,
-  clan_name: '环奈连结',
-  stage: '暂无信息',
+  clan_name: "环奈连结",
+  stage: "暂无信息",
   dao: 0,
   day_num: 0,
   yesterday_dao: 0,
   rank: 114514,
-  state: '关闭',
+  state: "关闭",
   boss: [],
-  report: []
-})
+  report: [],
+});
 
-const route = useRoute()
-const cookie = JSON.parse(Cookies.get(import.meta.env.VITE_Cookie_Name) || '')
-const base_url = import.meta.env.VITE_API_URL
-const dashboard_api = `${base_url}/${route.params.group_id}/dashboard`
-const boss_api = `${base_url}/boss_img`
+const route = useRoute();
+const cookie = JSON.parse(Cookies.get(import.meta.env.VITE_Cookie_Name) || "");
+const base_url = import.meta.env.VITE_API_URL;
+const dashboard_api = `${base_url}/${route.params.group_id}/dashboard`;
+const boss_api = `${base_url}/boss_img`;
 axios.post(dashboard_api, cookie).then((response) => {
-  data.value = response.data.data
-})
+  data.value = response.data.data;
+});
 
 interface DashboardInfo {
-  user_id: string
-  clan_name: string
-  yesterday_dao: number
-  day_num: number
-  name: string
-  priority: number
-  stage: string
-  dao: number
-  rank: number
-  state: string
-  boss: Boss[]
-  report: DetailReport[]
+  user_id: string;
+  clan_name: string;
+  yesterday_dao: number;
+  day_num: number;
+  name: string;
+  priority: number;
+  stage: string;
+  dao: number;
+  rank: number;
+  state: string;
+  boss: Boss[];
+  report: DetailReport[];
 }
 
 interface Boss {
-  name: string
-  id: number
-  current_hp: number
-  max_hp: number
-  lap: number
-  notice: Notice
+  name: string;
+  id: number;
+  current_hp: number;
+  max_hp: number;
+  lap: number;
+  notice: Notice;
 }
 
 interface Notice {
-  fighter: number
-  subscribe: number
-  apply: number
-  tree: number
+  fighter: number;
+  subscribe: number;
+  apply: number;
+  tree: number;
 }
 
 interface DetailReport {
-  dao_num: number
-  names: string[]
+  dao_num: number;
+  names: string[];
 }
 
 function boss_img(id: number) {
-  return new URL('../assets/img/boss/' + id + '.webp', import.meta.url).href
+  return new URL("../assets/img/boss/" + id + ".webp", import.meta.url).href;
 }
 </script>
 
 <template>
   <el-container>
     <el-aside width="250px">
-      <SideMenu :qq_id="data.user_id" :group_id="route.params.group_id"></SideMenu>
+      <SideMenu
+        :qq_id="data.user_id"
+        :group_id="route.params.group_id"
+      ></SideMenu>
     </el-aside>
     <el-main class="dash-broad-main">
       <HeaderMenu :priority="data.priority"></HeaderMenu>
@@ -147,8 +150,12 @@ function boss_img(id: number) {
               <el-row>
                 <el-col :span="24">
                   <el-button-group>
-                    <el-button type="warning">&nbsp;&nbsp;&nbsp;&nbsp;记录SL&nbsp;&nbsp;</el-button>
-                    <el-button type="warning">&nbsp;&nbsp;取消SL&nbsp;&nbsp;</el-button>
+                    <el-button type="warning"
+                      >&nbsp;&nbsp;&nbsp;&nbsp;记录SL&nbsp;&nbsp;</el-button
+                    >
+                    <el-button type="warning"
+                      >&nbsp;&nbsp;取消SL&nbsp;&nbsp;</el-button
+                    >
                   </el-button-group>
                 </el-col>
               </el-row>
@@ -156,7 +163,9 @@ function boss_img(id: number) {
               <el-row>
                 <el-col :span="24">
                   <el-button-group>
-                    <el-button type="danger">&nbsp;&nbsp;失误挂树&nbsp;</el-button>
+                    <el-button type="danger"
+                      >&nbsp;&nbsp;失误挂树&nbsp;</el-button
+                    >
                     <el-button type="danger">&nbsp;取消挂树</el-button>
                   </el-button-group>
                 </el-col>
@@ -183,7 +192,9 @@ function boss_img(id: number) {
           </el-row>
           <el-collapse v-for="dao in data.report" :key="dao">
             <el-collapse-item
-              :title="'出' + dao.dao_num + '刀的成员 （' + dao.names.length + '人 ）'"
+              :title="
+                '出' + dao.dao_num + '刀的成员 （' + dao.names.length + '人 ）'
+              "
             >
               <el-tag
                 v-for="member in dao.names"
@@ -207,9 +218,9 @@ function boss_img(id: number) {
   .clanbattle-info {
     width: 300px;
     text-align: center;
-    height: 697px;
+    height: 695px;
     .card-header {
-      background-image: url('../assets/img/banner.png');
+      background-image: url("../assets/img/banner.png");
       background-position: center;
       background-repeat: no-repeat;
       color: white;
@@ -235,7 +246,7 @@ function boss_img(id: number) {
   }
 }
 .info-scrollbar {
-  height: calc(100vh - 77px);
+  height: calc(100vh - 73.33px);
 }
 .dash-broad-side {
   padding: 20px;
