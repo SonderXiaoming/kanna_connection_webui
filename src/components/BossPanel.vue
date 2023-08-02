@@ -2,7 +2,7 @@
 const props = defineProps({
   imgUrl: {
     type: String,
-    default: ''
+    default: "",
   },
   notice: {
     type: Object,
@@ -10,46 +10,46 @@ const props = defineProps({
       fighter: 0,
       subscribe: 0,
       apply: 0,
-      tree: 0
-    })
+      tree: 0,
+    }),
   },
   bannerColor: {
     type: String,
-    default: 'blue'
-  }
-})
+    default: "blue",
+  },
+});
 function boss_percentage(percentage: number): string {
   if (percentage == 0) {
-    return '无法挑战'
+    return "无法挑战";
   }
   if (percentage < 0.01) {
-    return '血皮'
+    return "血皮";
   }
-  return percentage.toFixed(2) + '%'
+  return percentage.toFixed(2) + "%";
 }
 
 const dynamic_tags = [
   {
-    name: '挑战',
-    type: 'warning',
-    value: props.notice.fighter
+    name: "挑战",
+    type: "warning",
+    value: props.notice.fighter,
   },
   {
-    name: '预约',
-    type: 'primary',
-    value: props.notice.subscribe
+    name: "预约",
+    type: "primary",
+    value: props.notice.subscribe,
   },
   {
-    name: '申请',
-    type: 'success',
-    value: props.notice.apply
+    name: "申请",
+    type: "success",
+    value: props.notice.apply,
   },
   {
-    name: '挂树',
-    type: 'danger',
-    value: props.notice.tree
-  }
-]
+    name: "挂树",
+    type: "danger",
+    value: props.notice.tree,
+  },
+];
 </script>
 
 <template>
@@ -65,9 +65,12 @@ const dynamic_tags = [
         <div></div>
         <div class="boss-notice" v-for="tag in dynamic_tags" :key="tag.type">
           <el-badge :value="tag.value" class="badge-item" :type="tag.type">
-            <el-tag :type="tag.type == 'primary' ? '' : tag.type" size="small" round>{{
-              tag.name
-            }}</el-tag>
+            <el-tag
+              :type="tag.type == 'primary' ? '' : tag.type"
+              size="small"
+              round
+              >{{ tag.name }}</el-tag
+            >
           </el-badge>
         </div>
         <div>
@@ -95,8 +98,8 @@ const dynamic_tags = [
 
 <style lang="scss" scoped>
 .boss-card {
-  height: 125px;
-  margin-bottom: 18px;
+  height: 130px;
+  margin-bottom: 11px;
   .boss-info {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -106,7 +109,8 @@ const dynamic_tags = [
       padding-left: 1.5rem;
       grid-column: span 2 / span 2;
       .boss-notice {
-        margin-top: 8px;
+        margin-top: 0.5rem;
+        margin-bottom: 0.25rem;
         display: inline-block;
         .badge-item {
           margin-right: 20px;
@@ -116,15 +120,18 @@ const dynamic_tags = [
         font-size: 1.125rem;
       }
       .boss-hp {
-        font-size: 1.125rem;
+        font-size: 1rem;
         font-weight: bold;
       }
+      .boss-hp-percentage {
+        margin-top: 0.5rem;
+      }
       .stage-letter {
-        margin: 0.5rem;
+        margin: 0.6rem;
         padding: 0.25rem;
         border-radius: 0.375rem;
         color: #fff;
-        font-size: 0.875rem;
+        font-size: 0.7rem;
       }
     }
     .boss-avatar {
