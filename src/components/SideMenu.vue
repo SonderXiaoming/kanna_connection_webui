@@ -55,7 +55,7 @@ function change_route(path: string) {
 .shell {
   display: flex;
   width: 250px;
-  height: 100vh;
+  height: calc(100vh - 22px);
   background-color: white;
   overflow: hidden;
   border-style: solid;
