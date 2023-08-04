@@ -3,10 +3,9 @@ import { ref } from "vue";
 import FootInfo from "@/components/FootInfo.vue";
 import SideMenu from "@/components/SideMenu.vue";
 import BossPanel from "@/components/BossPanel.vue";
-import { useRoute } from "vue-router";
-import axios from "axios";
-
-import Cookies from "js-cookie";
+import { useRoute, useRouter } from "vue-router";
+import axios, { AxiosError, type AxiosResponse } from "axios";
+import { show_notice } from "@/globals/until";
 var data = ref<DashboardInfo>({
   user_id: "1791800364",
   name: "桥本环奈",
@@ -23,13 +22,35 @@ var data = ref<DashboardInfo>({
 });
 
 const route = useRoute();
-const cookie = JSON.parse(Cookies.get(import.meta.env.VITE_Cookie_Name) || "");
+const router = useRouter();
 const base_url = import.meta.env.VITE_API_URL;
 const dashboard_api = `${base_url}/${route.params.group_id}/dashboard`;
 const boss_api = `${base_url}/boss_img`;
-axios.post(dashboard_api, cookie).then((response) => {
-  data.value = response.data.data;
-});
+axios
+  .get(dashboard_api, { withCredentials: true })
+  .then((response: AxiosResponse<DashboardInfo>) => {
+    data.value = response.data;
+  })
+  .catch((error: Error | AxiosError) => {
+    // 错误处理
+    if (axios.isAxiosError(error)) {
+      // 服务器响应错误
+      if (error.response) {
+        show_notice(
+          "服务器错误: " + error.response.status + error.response.data.detail
+        );
+        if (error.response.status == 401) {
+          router.push("/login");
+        }
+      } else {
+        // 无法接收服务器响应
+        show_notice("服务器错误并且无返回" + error.request || error.message);
+      }
+    } else {
+      // 其他类型的错误
+      show_notice("其他错误" + error.message);
+    }
+  });
 
 interface DashboardInfo {
   user_id: string;
@@ -65,10 +86,6 @@ interface Notice {
 interface DetailReport {
   dao_num: number;
   names: string[];
-}
-
-function boss_img(id: number) {
-  return new URL("../assets/img/boss/" + id + ".webp", import.meta.url).href;
 }
 </script>
 

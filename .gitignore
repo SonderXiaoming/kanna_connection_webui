@@ -9,3 +9,4 @@ src/assets/sprites/*.*
 !src/assets/sprites/.gitkeep
 public/icons
 .env
+components.d.ts

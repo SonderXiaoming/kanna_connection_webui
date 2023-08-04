@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { ElMessage } from "element-plus";
-import axios from "axios";
-import Cookies from "js-cookie";
-const cookie_name = import.meta.env.VITE_Cookie_Name;
-const login_api = `${import.meta.env.VITE_API_URL}/login`;
+import axios, { type AxiosError } from "axios";
+import { show_notice } from "@/globals/until";
 
+const login_api = `${import.meta.env.VITE_API_URL}/login`;
 const route = useRoute();
 const router = useRouter();
 const temp_account = route.query.account;
@@ -20,41 +18,33 @@ const form = ref({
 if (temp_account && temp_password) {
   try_login(temp_account.toString(), temp_password.toString());
 }
-const show_notice = (message: string, type: any = "error") => {
-  ElMessage({
-    message: message,
-    type: type,
-  });
-};
 
-function try_login(
-  _username: string = username.value,
-  _password: string = password.value
-) {
+function try_login(_username: string, _password: string) {
   axios
-    .post(login_api, {
-      account: _username,
-      password: _password,
-    })
-    .then((response) => {
+    .post(
+      login_api,
+      {
+        account: _username,
+        password: _password,
+      },
+      { withCredentials: true }
+    )
+    .then(() => {
       show_notice("登录成功", "success");
-      Cookies.remove(cookie_name);
-      Cookies.set(cookie_name, JSON.stringify(response.data.data), {
-        expires: 7,
-      });
-
       router.push("/home");
     })
-    .catch((error) => {
+    .catch((error: Error | AxiosError) => {
       // 错误处理
-      if (error.response) {
+      if (axios.isAxiosError(error)) {
         // 服务器响应错误
-        show_notice(
-          "服务器错误: " + error.response.status + error.response.data.detail
-        );
-      } else if (error.request) {
-        // 无法接收服务器响应
-        show_notice("服务器错误并且无返回" + error.request);
+        if (error.response) {
+          show_notice(
+            "服务器错误: " + error.response.status + error.response.data.detail
+          );
+        } else {
+          // 无法接收服务器响应
+          show_notice("服务器错误并且无返回" + error.request || error.message);
+        }
       } else {
         // 其他类型的错误
         show_notice("其他错误" + error.message);

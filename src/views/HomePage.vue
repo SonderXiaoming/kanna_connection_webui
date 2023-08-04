@@ -2,8 +2,8 @@
 import FootInfo from "../components/FootInfo.vue";
 import AvatarInfo from "../components/AvatarInfo.vue";
 import HeaderMenu from "../components/HeaderMenu.vue";
-import axios from "axios";
-import Cookies from "js-cookie";
+import axios, { AxiosError, type AxiosResponse } from "axios";
+import { show_notice } from "@/globals/until";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 const router = useRouter();
@@ -30,12 +30,29 @@ interface Clan {
   group_id: string;
 }
 axios
-  .post(
-    home_api,
-    JSON.parse(Cookies.get(import.meta.env.VITE_Cookie_Name) || "")
-  )
-  .then((response) => {
-    data.value = response.data.data;
+  .get(home_api, { withCredentials: true })
+  .then((response: AxiosResponse<HomeInfo>) => {
+    data.value = response.data;
+  })
+  .catch((error: Error | AxiosError) => {
+    // 错误处理
+    if (axios.isAxiosError(error)) {
+      // 服务器响应错误
+      if (error.response) {
+        show_notice(
+          "服务器错误: " + error.response.status + error.response.data.detail
+        );
+        if (error.response.status == 401) {
+          router.push("/login");
+        }
+      } else {
+        // 无法接收服务器响应
+        show_notice("服务器错误并且无返回" + error.request || error.message);
+      }
+    } else {
+      // 其他类型的错误
+      show_notice("其他错误" + error.message);
+    }
   });
 
 function clan_dashboard(group_id: string) {

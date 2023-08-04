@@ -1,114 +1,143 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRoute } from 'vue-router'
-import FootInfo from '@/components/FootInfo.vue'
-import SideMenu from '@/components/SideMenu.vue'
-import Cookies from 'js-cookie'
-import axios from 'axios'
+import { ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import FootInfo from "@/components/FootInfo.vue";
+import SideMenu from "@/components/SideMenu.vue";
+import axios, { AxiosError, type AxiosResponse } from "axios";
+import { show_notice } from "@/globals/until";
 
-const route = useRoute()
-const report_api = `${import.meta.env.VITE_API_URL}/${route.params.group_id}/report`
+const route = useRoute();
+const router = useRouter();
+const report_api = `${import.meta.env.VITE_API_URL}/${
+  route.params.group_id
+}/report`;
 
 function format_date(timestamp: number) {
-  const date = new Date(timestamp * 1000) // 参数需要毫秒数，所以这里将秒数乘于 1000
-  const Y = date.getFullYear() + '-'
-  const M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-'
-  const D = date.getDate() + ' '
-  const h = date.getHours() + ':'
-  const m = date.getMinutes() + ':'
-  const s = date.getSeconds()
-  return Y + M + D + h + m + s
+  const date = new Date(timestamp * 1000); // 参数需要毫秒数，所以这里将秒数乘于 1000
+  const Y = date.getFullYear() + "-";
+  const M =
+    (date.getMonth() + 1 < 10
+      ? "0" + (date.getMonth() + 1)
+      : date.getMonth() + 1) + "-";
+  const D = date.getDate() + " ";
+  const h = date.getHours() + ":";
+  const m = date.getMinutes() + ":";
+  const s = date.getSeconds();
+  return Y + M + D + h + m + s;
 }
 
 var data = ref<ReportInfo>({
-  user_id: '1791800364',
+  user_id: "1791800364",
   priority: 0,
   all: [],
   detail: [],
-  me: []
-})
-var table_data = ref<any[]>([])
-var table_type = ref<string>('all')
-var date_filter = ref<string[]>([])
+  me: [],
+});
+var table_data = ref<any[]>([]);
+var table_type = ref<string>("all");
+var date_filter = ref<string[]>([]);
 axios
-  .post(report_api, JSON.parse(Cookies.get(import.meta.env.VITE_Cookie_Name) || ''))
-  .then((response) => {
-    data.value = response.data.data
-    table_data.value = data.value.all
+  .get(report_api, { withCredentials: true })
+  .then((response: AxiosResponse<ReportInfo>) => {
+    data.value = response.data;
+    table_data.value = data.value.all;
   })
+  .catch((error: Error | AxiosError) => {
+    // 错误处理
+    if (axios.isAxiosError(error)) {
+      // 服务器响应错误
+      if (error.response) {
+        show_notice(
+          "服务器错误: " + error.response.status + error.response.data.detail
+        );
+        if (error.response.status == 401) {
+          router.push("/login");
+        }
+      } else {
+        // 无法接收服务器响应
+        show_notice("服务器错误并且无返回" + error.request || error.message);
+      }
+    } else {
+      // 其他类型的错误
+      show_notice("其他错误" + error.message);
+    }
+  });
 interface ReportInfo {
-  user_id: string
-  priority: number
-  all: UserGeneral[]
-  detail: DaoDetial[]
-  me: MeReport[]
+  user_id: string;
+  priority: number;
+  all: UserGeneral[];
+  detail: DaoDetial[];
+  me: MeReport[];
 }
 
 interface UserGeneral {
-  name: string
-  damage: number
-  score: number
-  dao: number
-  damage_rate: number
-  score_rate: number
+  name: string;
+  damage: number;
+  score: number;
+  dao: number;
+  damage_rate: number;
+  score_rate: number;
 }
 
 interface DaoDetial {
-  name: string
-  damage: number
-  score: number
-  type: string
-  date: number
-  dao_id: number
-  boss: number
-  lap: number
+  name: string;
+  damage: number;
+  score: number;
+  type: string;
+  date: number;
+  dao_id: number;
+  boss: number;
+  lap: number;
 }
 
 interface MeReport {
-  dao: number
-  damage: number
-  score: number
-  type: string
-  date: string
-  dao_id: number
-  boss: number
-  lap: number
+  dao: number;
+  damage: number;
+  score: number;
+  type: string;
+  date: string;
+  dao_id: number;
+  boss: number;
+  lap: number;
 }
 
 function change_table(type: string) {
-  if (type == 'all') {
-    table_type.value = 'all'
-    table_data.value = data.value.all
-  } else if (type == 'detail') {
-    table_type.value = 'detail'
-    table_data.value = data.value.detail
+  if (type == "all") {
+    table_type.value = "all";
+    table_data.value = data.value.all;
+  } else if (type == "detail") {
+    table_type.value = "detail";
+    table_data.value = data.value.detail;
   } else {
-    table_type.value = 'me'
-    table_data.value = data.value.me
+    table_type.value = "me";
+    table_data.value = data.value.me;
   }
 }
 
 function type_color(type: string) {
-  if (type === '完整刀') {
-    return ''
+  if (type === "完整刀") {
+    return "";
   }
-  if (type === '尾刀') {
-    return 'danger'
+  if (type === "尾刀") {
+    return "danger";
   }
-  if (type === '补偿刀') {
-    return 'warning'
+  if (type === "补偿刀") {
+    return "warning";
   }
 }
 
 const filter_boss = (value: string, row: any) => {
-  return row.boss == value
-}
+  return row.boss == value;
+};
 </script>
 
 <template>
   <el-container>
     <el-aside width="250px">
-      <SideMenu :qq_id="data.user_id" :group_id="route.params.group_id"></SideMenu>
+      <SideMenu
+        :qq_id="data.user_id"
+        :group_id="route.params.group_id"
+      ></SideMenu>
     </el-aside>
     <el-main class="notice-main">
       <HeaderMenu :priority="data.priority"></HeaderMenu>
@@ -122,8 +151,18 @@ const filter_boss = (value: string, row: any) => {
             </el-button-group>
           </template>
 
-          <el-table :data="table_data" table-layout="auto" style="width: 100%" :border="true">
-            <el-table-column label="排名" type="index" width="60" v-if="table_type === 'all'" />
+          <el-table
+            :data="table_data"
+            table-layout="auto"
+            style="width: 100%"
+            :border="true"
+          >
+            <el-table-column
+              label="排名"
+              type="index"
+              width="60"
+              v-if="table_type === 'all'"
+            />
             <el-table-column
               label="时间"
               v-if="table_type != 'all'"
@@ -135,7 +174,7 @@ const filter_boss = (value: string, row: any) => {
                 { text: '2', value: '2' },
                 { text: '3', value: '3' },
                 { text: '4', value: '4' },
-                { text: '5', value: '5' }
+                { text: '5', value: '5' },
               ]"
               :filter-method="filter_boss"
             >
@@ -161,7 +200,7 @@ const filter_boss = (value: string, row: any) => {
                 { text: '2', value: '2' },
                 { text: '3', value: '3' },
                 { text: '4', value: '4' },
-                { text: '5', value: '5' }
+                { text: '5', value: '5' },
               ]"
               :filter-method="filter_boss"
             >
@@ -174,12 +213,20 @@ const filter_boss = (value: string, row: any) => {
                 <span>{{ scope.row.lap }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="伤害" :sortable="table_type === 'all'" prop="damage">
+            <el-table-column
+              label="伤害"
+              :sortable="table_type === 'all'"
+              prop="damage"
+            >
               <template #default="scope">
                 <span>{{ scope.row.damage }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="分数" :sortable="table_type === 'all'" prop="score">
+            <el-table-column
+              label="分数"
+              :sortable="table_type === 'all'"
+              prop="score"
+            >
               <template #default="scope">
                 <span>{{ scope.row.score }}</span>
               </template>
@@ -196,7 +243,9 @@ const filter_boss = (value: string, row: any) => {
             </el-table-column>
             <el-table-column label="类型" v-if="table_type != 'all'">
               <template #default="scope">
-                <el-tag :type="type_color(scope.row.type)">{{ scope.row.type }}</el-tag>
+                <el-tag :type="type_color(scope.row.type)">{{
+                  scope.row.type
+                }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column label="编号" v-if="table_type != 'all'">
