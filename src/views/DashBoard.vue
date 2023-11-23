@@ -1,11 +1,17 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onUnmounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import axios, { AxiosError, type AxiosResponse } from "axios";
 import FootInfo from "@/components/FootInfo.vue";
 import SideMenu from "@/components/SideMenu.vue";
 import BossPanel from "@/components/BossPanel.vue";
-import { useRoute, useRouter } from "vue-router";
-import axios, { AxiosError, type AxiosResponse } from "axios";
+import NoticeDialog from "@/components/NoticeDialog.vue";
+import DailyNotice from "@/components/DailyNotice.vue";
+import HeaderMenu from "@/components/HeaderMenu.vue";
+import type { DashboardInfo } from "@/globals/apimodels";
 import { show_notice } from "@/globals/until";
+import { get_dashboard_api, get_dashboard_renew_api } from "@/globals/api";
+
 var data = ref<DashboardInfo>({
   user_id: "1791800364",
   name: "桥本环奈",
@@ -23,109 +29,115 @@ var data = ref<DashboardInfo>({
 
 const route = useRoute();
 const router = useRouter();
-const base_url = import.meta.env.VITE_API_URL;
-const dashboard_api = `${base_url}/${route.params.group_id}/dashboard`;
-const boss_api = `${base_url}/boss_img`;
+const group_id = route.params.group_id as string;
+const notice_type = ref(0);
+const dialog_visible = ref(false);
+const cancel = ref(false);
+const notice_option = [
+  { type: 0, label1: "预约BOSS", label2: "取消预约 ", color: "primary" },
+  { type: 1, label1: "  失误挂树 ", label2: " 取消挂树", color: "danger" },
+  { type: 2, label1: "申请BOSS", label2: "取消申请 ", color: "success" },
+  { type: 5, label1: "    记录SL  ", label2: "  取消SL  ", color: "warning" },
+];
+function notice(type: number, _cancel: boolean = false) {
+  cancel.value = _cancel;
+  dialog_visible.value = true;
+  notice_type.value = type;
+}
 axios
-  .get(dashboard_api, { withCredentials: true })
+  .get(get_dashboard_api(group_id), { withCredentials: true })
   .then((response: AxiosResponse<DashboardInfo>) => {
     data.value = response.data;
   })
-  .catch((error: Error | AxiosError) => {
-    // 错误处理
-    if (axios.isAxiosError(error)) {
-      // 服务器响应错误
-      if (error.response) {
-        show_notice(
-          "服务器错误: " + error.response.status + error.response.data.detail
-        );
-        if (error.response.status == 401) {
-          router.push("/login");
-        }
-      } else {
-        // 无法接收服务器响应
-        show_notice("服务器错误并且无返回" + error.request || error.message);
+  .catch((error: Error | AxiosError) => api_error_handle(error));
+
+const api_error_handle = (error: Error | AxiosError) => {
+  // 错误处理
+  if (axios.isAxiosError(error)) {
+    // 服务器响应错误
+    if (error.response) {
+      show_notice(
+        "服务器错误: " + error.response.status + error.response.data.detail
+      );
+      if (error.response.status == 401) {
+        router.push("/login");
       }
     } else {
-      // 其他类型的错误
-      show_notice("其他错误" + error.message);
+      // 无法接收服务器响应
+      show_notice("服务器错误并且无返回" + error.request || error.message);
     }
-  });
+  } else {
+    // 其他类型的错误
+    show_notice("其他错误" + error.message);
+  }
+};
+const eventSource = ref<EventSource>(
+  new EventSource(get_dashboard_renew_api(group_id), {
+    withCredentials: true,
+  })
+);
 
-interface DashboardInfo {
-  user_id: string;
-  clan_name: string;
-  yesterday_dao: number;
-  day_num: number;
-  name: string;
-  priority: number;
-  stage: string;
-  dao: number;
-  rank: number;
-  state: string;
-  boss: Boss[];
-  report: DetailReport[];
-}
+const initEventSource = () => {
+  eventSource.value.onmessage = function (event: MessageEvent) {
+    data.value = JSON.parse(event.data);
+  };
 
-interface Boss {
-  name: string;
-  id: number;
-  current_hp: number;
-  max_hp: number;
-  lap: number;
-  notice: Notice;
-}
+  eventSource.value.onerror = function (error: Event) {
+    show_notice("服务器错误: 请找管理员修复后刷新网页");
+    eventSource.value.close();
+  };
+};
 
-interface Notice {
-  fighter: number;
-  subscribe: number;
-  apply: number;
-  tree: number;
-}
+// 在组件卸载时关闭 EventSource
+onUnmounted(() => {
+  if (eventSource.value) {
+    eventSource.value.close();
+  }
+});
 
-interface DetailReport {
-  dao_num: number;
-  names: string[];
-}
+initEventSource();
 </script>
 
 <template>
   <el-container>
     <el-aside width="250px">
-      <SideMenu
-        :qq_id="data.user_id"
-        :group_id="route.params.group_id"
-      ></SideMenu>
+      <SideMenu :qq_id="data.user_id" :group_id="group_id"> </SideMenu>
     </el-aside>
     <el-main class="dash-broad-main">
       <HeaderMenu :priority="data.priority"></HeaderMenu>
       <el-scrollbar class="info-scrollbar">
         <el-container>
           <el-main>
-            <div v-for="current_boss in data.boss" :key="current_boss.id">
-              <BossPanel
-                banner-color="yellow"
-                :img-url="boss_api + '/' + current_boss.id"
-                :notice="current_boss.notice"
-              >
-                <template #title> {{ current_boss.name }} </template>
-                <template #subtitle v-if="current_boss.max_hp">
-                  HP: {{ current_boss.current_hp }} / {{ current_boss.max_hp }}
-                </template>
-                <template #subtitle v-else> 未知 </template>
-                <template #banner> {{ current_boss.lap }}周目 </template>
-              </BossPanel>
-            </div>
+            <BossPanel
+              banner-color="yellow"
+              :img-url="`https://redive.estertion.win/icon/unit/${current_boss.id}.webp`"
+              :subscribe="current_boss.subscribe"
+              :fighter="current_boss.fighter"
+              :tree="current_boss.tree"
+              :apply="current_boss.apply"
+              :percentage="
+                current_boss.max_hp
+                  ? (current_boss.current_hp / current_boss.max_hp) * 100
+                  : 100
+              "
+              v-for="current_boss in data.boss"
+              :key="current_boss.id"
+            >
+              <template #title> {{ current_boss.name }} </template>
+              <template #subtitle v-if="current_boss.max_hp">
+                HP: {{ current_boss.current_hp }} / {{ current_boss.max_hp }}
+              </template>
+              <template #subtitle v-else> 未知 </template>
+              <template #banner> {{ current_boss.lap }}周目 </template>
+            </BossPanel>
           </el-main>
           <el-aside class="dash-broad-side">
-            <el-card class="clanbattle-info" shadow="hover">
-              <div class="card-header">
-                <span>{{ data.clan_name }}</span>
-              </div>
+            <el-card class="clanbattle-info">
+              <div class="card-header">{{ data.clan_name }}</div>
               <div class="lap-progress">
                 <el-progress
                   type="dashboard"
-                  :percentage="(data.dao / 90) * 100"
+                  :percentage="data.dao ? (data.dao / 90) * 100 : 100"
                   :width="170"
                   :stroke-width="13"
                 >
@@ -137,7 +149,17 @@ interface DetailReport {
                 <el-col :span="24">监控状态： {{ data.state }} </el-col>
               </el-row>
               <el-row>
-                <el-col :span="24">监控人： {{ data.name }}</el-col>
+                <el-col :span="24"
+                  >监控人：
+                  <el-tag v-if="!isNaN(Number(data.name))">
+                    <el-avatar
+                      :src="`http://q1.qlogo.cn/g?b=qq&nk=${data.name}&s=140`"
+                      :size="20"
+                    ></el-avatar>
+                    {{ data.name }}
+                  </el-tag>
+                  <span v-else>关闭</span>
+                </el-col>
               </el-row>
               <el-row>
                 <el-col :span="24">当前排名： {{ data.rank }}</el-col>
@@ -146,85 +168,39 @@ interface DetailReport {
                 <el-col :span="24">当前进度：{{ data.stage }}</el-col>
               </el-row>
               <el-divider />
-              <el-row>
-                <el-col :span="24">
-                  <el-button-group>
-                    <el-button type="primary">预约BOSS</el-button>
-                    <el-button type="primary">取消预约&nbsp;</el-button>
-                  </el-button-group>
-                </el-col>
-              </el-row>
-              <el-divider />
-              <el-row>
-                <el-col :span="24">
-                  <el-button-group>
-                    <el-button type="success">申请BOSS</el-button>
-                    <el-button type="success">取消申请&nbsp;</el-button>
-                  </el-button-group>
-                </el-col>
-              </el-row>
-              <el-divider />
-              <el-row>
-                <el-col :span="24">
-                  <el-button-group>
-                    <el-button type="warning"
-                      >&nbsp;&nbsp;&nbsp;&nbsp;记录SL&nbsp;&nbsp;</el-button
-                    >
-                    <el-button type="warning"
-                      >&nbsp;&nbsp;取消SL&nbsp;&nbsp;</el-button
-                    >
-                  </el-button-group>
-                </el-col>
-              </el-row>
-              <el-divider />
-              <el-row>
-                <el-col :span="24">
-                  <el-button-group>
-                    <el-button type="danger"
-                      >&nbsp;&nbsp;失误挂树&nbsp;</el-button
-                    >
-                    <el-button type="danger">&nbsp;取消挂树</el-button>
-                  </el-button-group>
-                </el-col>
-              </el-row>
+              <div v-for="notice_data in notice_option" :key="notice_data.type">
+                <el-row>
+                  <el-col :span="24">
+                    <el-button-group>
+                      <el-button
+                        :type="notice_data.color"
+                        @click="notice(notice_data.type)"
+                        style="width: 96px"
+                        >{{ notice_data.label1 }}</el-button
+                      >
+                      <el-button
+                        :type="notice_data.color"
+                        @click="notice(notice_data.type, true)"
+                        style="width: 96px"
+                        >{{ notice_data.label2 }}</el-button
+                      >
+                    </el-button-group>
+                  </el-col>
+                </el-row>
+                <el-divider />
+              </div>
             </el-card>
           </el-aside>
         </el-container>
-        <el-card class="day-report">
-          <template #header>
-            <div class="report-header">
-              <span>出刀状态</span>
-            </div>
-          </template>
-          <el-row justify="center">
-            <el-col :span="8">
-              <el-statistic title="今日出刀" :value="data.dao" />
-            </el-col>
-            <el-col :span="8">
-              <el-statistic title="昨日出刀" :value="data.yesterday_dao" />
-            </el-col>
-            <el-col :span="8">
-              <el-statistic title="会战天数" :value="data.day_num" />
-            </el-col>
-          </el-row>
-          <el-collapse v-for="dao in data.report" :key="dao">
-            <el-collapse-item
-              :title="
-                '出' + dao.dao_num + '刀的成员 （' + dao.names.length + '人 ）'
-              "
-            >
-              <el-tag
-                v-for="member in dao.names"
-                :key="member"
-                effect="dark"
-                style="margin: 10px"
-                >{{ member }}</el-tag
-              >
-            </el-collapse-item>
-          </el-collapse>
-        </el-card>
+        <DailyNotice :data="data"></DailyNotice>
       </el-scrollbar>
     </el-main>
+    <NoticeDialog
+      v-model:dialog-visible="dialog_visible"
+      :type="notice_type"
+      :group="group_id"
+      :cancel="cancel"
+    ></NoticeDialog>
     <FootInfo></FootInfo>
   </el-container>
 </template>
@@ -232,6 +208,7 @@ interface DetailReport {
 <style lang="scss" scoped>
 .dash-broad-main {
   padding: 0;
+  background-color: #80808013;
   .clanbattle-info {
     width: 300px;
     text-align: center;
@@ -250,16 +227,12 @@ interface DetailReport {
         font-size: 30px;
       }
       .percentage-label {
+        font-family: sans-serif;
         display: block;
         margin-top: 10px;
         font-size: 20px;
       }
     }
-  }
-  .day-report {
-    margin-left: 20px;
-    margin-right: 25px;
-    margin-bottom: 35px;
   }
 }
 .info-scrollbar {
@@ -269,8 +242,5 @@ interface DetailReport {
   padding: 20px;
   width: 350px;
   justify-content: center;
-}
-.el-col {
-  text-align: center;
 }
 </style>

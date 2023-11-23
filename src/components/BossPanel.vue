@@ -1,25 +1,32 @@
 <script setup lang="ts">
+import { reactive, ref, watchEffect } from "vue";
+
 const props = defineProps({
   imgUrl: {
     type: String,
-    default: "",
   },
-  notice: {
-    type: Object,
-    default: () => ({
-      fighter: 0,
-      subscribe: 0,
-      apply: 0,
-      tree: 0,
-    }),
+  fighter: {
+    type: Number,
+  },
+  subscribe: {
+    type: Number,
+  },
+  apply: {
+    type: Number,
+  },
+  tree: {
+    type: Number,
+  },
+  percentage: {
+    type: Number,
   },
   bannerColor: {
     type: String,
     default: "blue",
   },
 });
-function boss_percentage(percentage: number): string {
-  if (percentage == 0) {
+function boss_percentage(percentage: any): string {
+  if (!percentage) {
     return "无法挑战";
   }
   if (percentage < 0.01) {
@@ -28,28 +35,34 @@ function boss_percentage(percentage: number): string {
   return percentage.toFixed(2) + "%";
 }
 
-const dynamic_tags = [
+const dynamic_tags = reactive([
   {
     name: "挑战",
     type: "warning",
-    value: props.notice.fighter,
+    value: props.fighter,
   },
   {
     name: "预约",
     type: "primary",
-    value: props.notice.subscribe,
+    value: props.subscribe,
   },
   {
     name: "申请",
     type: "success",
-    value: props.notice.apply,
+    value: props.apply,
   },
   {
     name: "挂树",
     type: "danger",
-    value: props.notice.tree,
+    value: props.tree,
   },
-];
+]);
+
+watchEffect(() => {
+  dynamic_tags[0].value = props.fighter;
+  dynamic_tags[1].value = props.subscribe;
+  dynamic_tags[2].value = props.tree;
+});
 </script>
 
 <template>
@@ -79,7 +92,7 @@ const dynamic_tags = [
           </span>
         </div>
         <el-progress
-          :percentage="100"
+          :percentage="percentage"
           :show-text="true"
           :format="boss_percentage"
           :text-inside="true"

@@ -33,6 +33,11 @@ const router = createRouter({
       name: "ReportTable",
       component: () => import("@/views/ReportTable.vue"),
     },
+    {
+      path: "/usercenter",
+      name: "UserCenter",
+      component: () => import("@/views/UserCenter.vue"),
+    },
   ],
 });
 

@@ -26,8 +26,10 @@ interface HomeInfo {
   clan: Clan[];
 }
 interface Clan {
-  name: string;
+  user_id: string;
+  group_name: string;
   group_id: string;
+  priority: number;
 }
 axios
   .get(home_api, { withCredentials: true })
@@ -54,7 +56,6 @@ axios
       show_notice("其他错误" + error.message);
     }
   });
-
 function clan_dashboard(group_id: string) {
   router.push(`/${group_id}/dashboard`);
 }
@@ -82,7 +83,7 @@ function clan_dashboard(group_id: string) {
           type="primary"
           class="clan_card"
           @click="clan_dashboard(clan.group_id)"
-          >公会：{{ clan.name }}</el-button
+          >公会：{{ clan.group_name }}</el-button
         >
       </div>
     </el-card>

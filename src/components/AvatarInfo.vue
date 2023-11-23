@@ -4,8 +4,16 @@ export default {
 };
 </script>
 
+<script setup lang="ts">
+import { useRouter } from "vue-router";
+const router = useRouter();
+function change_route(path: string) {
+  router.push(path);
+}
+</script>
+
 <template>
-  <div class="avatar">
+  <div class="avatar" @click="change_route('/login')" style="cursor: pointer">
     <el-avatar
       :src="'http://q1.qlogo.cn/g?b=qq&nk=' + qq_id + '&s=140'"
       :size="100"

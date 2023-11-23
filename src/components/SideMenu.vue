@@ -1,29 +1,47 @@
+<script lang="ts" setup>
+import AvatarInfo from "../components/AvatarInfo.vue";
+import { Document, Menu as IconMenu, Location } from "@element-plus/icons-vue";
+import { useRouter } from "vue-router";
+const props = defineProps({
+  qq_id: {
+    type: [String, Number],
+  },
+  group_id: {
+    type: String,
+  },
+});
+const router = useRouter();
+function change_route(path: string) {
+  router.push(path);
+}
+</script>
+
 <template>
   <div class="shell">
     <el-container>
       <el-header class="menu-header">
-        <AvatarInfo :qq_id="qq_id" class="avatar"></AvatarInfo>
+        <AvatarInfo :qq_id="props.qq_id" class="avatar"></AvatarInfo>
       </el-header>
       <el-divider />
       <el-main class="shell-main">
         <el-menu class="menu-vertical">
           <el-menu-item
             index="1"
-            @click="change_route(`/${group_id}/dashboard`)"
+            @click="change_route(`/${props.group_id}/dashboard`)"
           >
             <el-icon><location /></el-icon>
             <span>会战面板</span>
           </el-menu-item>
           <el-menu-item
             index="2"
-            @click="change_route(`/${group_id}/noticetable`)"
+            @click="change_route(`/${props.group_id}/noticetable`)"
           >
             <el-icon><icon-menu /></el-icon>
             <span>通知表格</span>
           </el-menu-item>
           <el-menu-item
             index="3"
-            @click="change_route(`/${group_id}/reporttable`)"
+            @click="change_route(`/${props.group_id}/reporttable`)"
           >
             <el-icon><document /></el-icon>
             <span>出刀记录</span>
@@ -35,35 +53,19 @@
   </div>
 </template>
 
-<script lang="ts">
-export default {
-  props: ["qq_id", "group_id"],
-};
-</script>
-
-<script lang="ts" setup>
-import AvatarInfo from "../components/AvatarInfo.vue";
-import { Document, Menu as IconMenu, Location } from "@element-plus/icons-vue";
-import { useRouter } from "vue-router";
-const router = useRouter();
-function change_route(path: string) {
-  router.push(path);
-}
-</script>
-
 <style lang="scss" scoped>
 .shell {
   display: flex;
-  width: 250px;
+  width: 249px;
   height: calc(100vh - 22px);
-  background-color: white;
-  overflow: hidden;
-  border-style: solid;
   border-right-width: 1px;
   border-top-width: 0px;
   border-left-width: 0px;
   border-bottom-width: 0px;
-  border-color: grey;
+  border-style: solid;
+  border-color: #80808088;
+  background-color: white;
+  overflow: hidden;
   transition-duration: 0.5s;
   justify-content: center;
   z-index: 1;
@@ -72,7 +74,7 @@ function change_route(path: string) {
     .avatar {
       position: absolute;
       top: 30px;
-      left: 70px;
+      left: 75px;
     }
   }
   .shell-main {

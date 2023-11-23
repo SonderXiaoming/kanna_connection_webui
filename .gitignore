@@ -10,3 +10,5 @@ src/assets/sprites/*.*
 public/icons
 .env
 components.d.ts
+%web%kanna_connection_webui/chat_history/history.sqlite
+.env.production
