@@ -136,6 +136,9 @@ function font_color(type: string) {
 }
 
 function get_date_filter(data: DaoDetial[] | MeReport[]) {
+  if (data.length === 0) {
+    return [];
+  }
   let start_time = data[data.length - 1].date;
   let date = new Date(start_time * 1000);
   if (date.getHours() < 5) {
@@ -206,8 +209,7 @@ const initEventSource = () => {
   };
 
   eventSource.value.onerror = function (error: Event) {
-    show_notice("服务器错误: 请找管理员修复后刷新网页");
-    eventSource.value.close();
+    show_notice("实时连接暂时中断，正在自动重连");
   };
 };
 

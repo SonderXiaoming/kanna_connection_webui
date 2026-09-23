@@ -124,8 +124,7 @@ const initEventSource = () => {
   };
 
   eventSource.value.onerror = function (error: Event) {
-    show_notice("服务器错误: 请找管理员修复后刷新网页");
-    eventSource.value.close();
+    show_notice("实时连接暂时中断，正在自动重连");
   };
 };
 
@@ -199,7 +198,7 @@ initEventSource();
                 <el-tag>
                   <el-avatar
                     :src="
-                      'http://q1.qlogo.cn/g?b=qq&nk=' +
+                      'https://q1.qlogo.cn/g?b=qq&nk=' +
                       scope.row.user_id +
                       '&s=140'
                     "

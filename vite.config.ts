@@ -1,6 +1,6 @@
 import { fileURLToPath, URL } from 'node:url'
 
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import AutoImport from 'unplugin-auto-import/vite'
@@ -8,10 +8,20 @@ import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 // https://vitejs.dev/config/
-export default defineConfig(({ command, mode }) => {
+export default defineConfig(() => {
   return {
+    base: '/kanna_connection/',
     server:{
-      hmr: true
+      hmr: true,
+      port: 3141,
+      strictPort: true,
+      proxy: {
+        '/kanna_connection/api': {
+          target: 'http://127.0.0.1:12139',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/kanna_connection\/api/, '')
+        }
+      }
     },
     plugins: [
       vue(),
@@ -27,9 +37,6 @@ export default defineConfig(({ command, mode }) => {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url))
       }
-    },
-    define: {
-      'process.env': loadEnv(mode, process.cwd())
     }
   }
 })

@@ -1,15 +1,11 @@
 <script lang="ts" setup>
 import AvatarInfo from "../components/AvatarInfo.vue";
-import { Document, Menu as IconMenu, Location } from "@element-plus/icons-vue";
+import { Aim, Document, Grid, Menu as IconMenu, Location, Setting } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
-const props = defineProps({
-  qq_id: {
-    type: [String, Number],
-  },
-  group_id: {
-    type: String,
-  },
-});
+const props = defineProps<{
+  qq_id: string | number;
+  group_id: string;
+}>();
 const router = useRouter();
 function change_route(path: string) {
   router.push(path);
@@ -45,6 +41,18 @@ function change_route(path: string) {
           >
             <el-icon><document /></el-icon>
             <span>出刀记录</span>
+          </el-menu-item>
+          <el-menu-item index="4" @click="change_route(`/clans?group=${props.group_id}`)">
+            <el-icon><setting /></el-icon>
+            <span>公会管理台</span>
+          </el-menu-item>
+          <el-menu-item index="5" @click="change_route('/resources')">
+            <el-icon><grid /></el-icon>
+            <span>BOX与助战</span>
+          </el-menu-item>
+          <el-menu-item index="6" @click="change_route('/arena')">
+            <el-icon><aim /></el-icon>
+            <span>竞技场中心</span>
           </el-menu-item>
         </el-menu>
       </el-main>

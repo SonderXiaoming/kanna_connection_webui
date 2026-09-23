@@ -4,19 +4,46 @@ import { useRoute, useRouter } from "vue-router";
 import axios, { type AxiosError } from "axios";
 import { show_notice } from "@/globals/until";
 
-const login_api = `${import.meta.env.VITE_API_URL}/login`;
+const api_base = import.meta.env.VITE_API_URL || "/kanna_connection/api";
+const login_api = `${api_base}/login`;
 const route = useRoute();
 const router = useRouter();
-const temp_account = route.query.account;
-const temp_password = route.query.password;
+const login_ticket = route.query.ticket;
 
 const form = ref({
   username: "",
   password: "",
 });
 
-if (temp_account && temp_password) {
-  try_login(temp_account.toString(), temp_password.toString());
+if (login_ticket) {
+  const ticket = login_ticket.toString();
+  router.replace({ path: "/login" }).then(() => try_login_ticket(ticket));
+}
+
+function try_login_ticket(ticket: string) {
+  axios
+    .post(login_api, { ticket }, { withCredentials: true })
+    .then(login_success)
+    .catch(login_error);
+}
+
+function login_success() {
+  show_notice("登录成功", "success");
+  router.push("/home");
+}
+
+function login_error(error: Error | AxiosError) {
+  if (axios.isAxiosError(error)) {
+    if (error.response) {
+      show_notice(
+        "服务器错误: " + error.response.status + error.response.data.detail
+      );
+    } else {
+      show_notice("服务器错误并且无返回: " + error.message);
+    }
+  } else {
+    show_notice("其他错误: " + error.message);
+  }
 }
 
 function try_login(_username: string, _password: string) {
@@ -29,27 +56,8 @@ function try_login(_username: string, _password: string) {
       },
       { withCredentials: true }
     )
-    .then(() => {
-      show_notice("登录成功", "success");
-      router.push("/home");
-    })
-    .catch((error: Error | AxiosError) => {
-      // 错误处理
-      if (axios.isAxiosError(error)) {
-        // 服务器响应错误
-        if (error.response) {
-          show_notice(
-            "服务器错误: " + error.response.status + error.response.data.detail
-          );
-        } else {
-          // 无法接收服务器响应
-          show_notice("服务器错误并且无返回" + error.request || error.message);
-        }
-      } else {
-        // 其他类型的错误
-        show_notice("其他错误" + error.message);
-      }
-    });
+    .then(login_success)
+    .catch(login_error);
 }
 </script>
 
@@ -83,9 +91,13 @@ function try_login(_username: string, _password: string) {
         </div>
       </div>
     </div>
-    <div class="video-container">
-      <div class="image"></div>
-    </div>
+    <video
+      class="video-container"
+      src="../assets/img/peko.webm"
+      muted
+      autoplay
+      loop
+    ></video>
   </div>
 </template>
 
@@ -188,24 +200,10 @@ function try_login(_username: string, _password: string) {
     width: 100vw;
     height: 100vh;
     position: absolute;
-
-    .image {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      filter: blur(15px); //背景模糊设置 */
-      // -webkit-filter: grayscale(100%);
-      filter: grayscale(20%); //背景灰度设置*/
-      background-image: url("../assets/img/grasp_video1.gif");
-      background-position: center 0;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      background-size: cover;
-      -webkit-background-size: cover;
-      /* 兼容Webkit内核浏览器如Chrome和Safari */
-      -o-background-size: cover;
-      /* 兼容Opera */
-    }
+    object-fit: cover;
+    filter: blur(15px); //背景模糊设置 */
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(20%); //背景灰度设置*/
   }
 }
 </style>

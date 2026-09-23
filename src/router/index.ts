@@ -38,6 +38,21 @@ const router = createRouter({
       name: "UserCenter",
       component: () => import("@/views/UserCenter.vue"),
     },
+    {
+      path: "/clans",
+      name: "ClanManage",
+      component: () => import("@/views/ClanManage.vue"),
+    },
+    {
+      path: "/resources",
+      name: "ResourceCenter",
+      component: () => import("@/views/ResourceCenter.vue"),
+    },
+    {
+      path: "/arena",
+      name: "ArenaCenter",
+      component: () => import("@/views/ArenaCenter.vue"),
+    },
   ],
 });
 

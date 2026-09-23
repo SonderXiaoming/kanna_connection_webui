@@ -25,9 +25,9 @@
             <el-icon><Notification /></el-icon>
             <span>通知设置</span>
           </el-menu-item>
-          <el-menu-item index="3" @click="to_local(`/${group_id}/reporttable`)">
-            <el-icon><document /></el-icon>
-            <span>没想好，但感觉应该有</span>
+          <el-menu-item index="3" @click="to_local('pcr-account')">
+            <el-icon><Key /></el-icon>
+            <span>PCR账号</span>
           </el-menu-item>
           <el-menu-item index="4" @click="change_route('/home')">
             <el-icon><back /></el-icon>
@@ -39,25 +39,18 @@
   </div>
 </template>
 
-<script lang="ts">
-export default {
-  props: ["qq_id", "group_id"],
-};
-</script>
-
 <script lang="ts" setup>
 import AvatarInfo from "../components/AvatarInfo.vue";
-import { Document, Back, User, Notification } from "@element-plus/icons-vue";
-import { show_notice } from "@/globals/until";
+import { Back, Key, User, Notification } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
+
+defineProps<{ qq_id: string | number }>();
 const router = useRouter();
 
 function to_local(id: string) {
-  let to_element = document.getElementById(id);
+  const to_element = document.getElementById(id);
   if (to_element) {
-    to_element.scrollIntoView();
-  } else {
-    show_notice("wnm,怎么会出错的");
+    to_element.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 }
 

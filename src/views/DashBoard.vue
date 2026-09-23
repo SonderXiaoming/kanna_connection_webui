@@ -83,8 +83,7 @@ const initEventSource = () => {
   };
 
   eventSource.value.onerror = function (error: Event) {
-    show_notice("服务器错误: 请找管理员修复后刷新网页");
-    eventSource.value.close();
+    show_notice("实时连接暂时中断，正在自动重连");
   };
 };
 
@@ -153,7 +152,7 @@ initEventSource();
                   >监控人：
                   <el-tag v-if="!isNaN(Number(data.name))">
                     <el-avatar
-                      :src="`http://q1.qlogo.cn/g?b=qq&nk=${data.name}&s=140`"
+                      :src="`https://q1.qlogo.cn/g?b=qq&nk=${data.name}&s=140`"
                       :size="20"
                     ></el-avatar>
                     {{ data.name }}

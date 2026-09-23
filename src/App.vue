@@ -1,4 +1,9 @@
+<script setup lang="ts">
+import NotificationBridge from "@/components/NotificationBridge.vue";
+</script>
+
 <template>
+  <NotificationBridge />
   <RouterView />
 </template>
 

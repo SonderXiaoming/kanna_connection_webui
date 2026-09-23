@@ -1,0 +1,36 @@
+server {
+    listen 12138;
+    server_name 127.0.0.1;
+
+    # 改成服务器上实际的 dist 绝对路径。
+    index index.html;
+
+    location = /kanna_connection {
+        return 301 /kanna_connection/;
+    }
+
+    # 去掉公开的 /kanna_connection/api 前缀，再转发给内部 FastAPI。
+    location /kanna_connection/api/ {
+        proxy_pass http://127.0.0.1:12139/;
+        proxy_http_version 1.1;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Connection "";
+
+        # Dashboard、通知和战报使用 SSE。
+        proxy_buffering off;
+        proxy_cache off;
+        proxy_read_timeout 3600s;
+        proxy_send_timeout 3600s;
+        add_header X-Accel-Buffering no always;
+    }
+
+    # Vue Router history 模式刷新回退。
+    location /kanna_connection/ {
+        alias /var/www/kanna_connection_webui/dist/;
+        try_files $uri $uri/ /kanna_connection/index.html;
+    }
+}
